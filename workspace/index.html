@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Workspace is noindexed because it is a private/client-side dashboard. -->
+<title>My Workspace | Fynvera</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<header class="header"><div class="container nav">
+<a class="brand" href="../index.html"><span class="brand-mark">↗</span><span class="brand-text">FYNVERA<small>MY WORKSPACE</small></span></a>
+<nav class="nav-main"><a href="../index.html">Home</a><a href="../articles.html">Articles</a><a href="../index.html#calculators">Calculators</a></nav>
+<div class="nav-actions"><a class="btn btn-outline" href="../index.html">View Site</a><button class="btn btn-primary" id="logout">Log out</button></div>
+</div></header>
+<main class="workspace"><div class="workspace-shell">
+<aside class="workspace-side">
+<div class="side-brand"><div class="eyebrow">PERSONAL SPACE</div><strong>Fynvera Workspace</strong></div>
+<div class="side-title">Workspace</div>
+<a class="ws-link active" href="index.html">▦ Dashboard</a><a class="ws-link" href="#watchlist">☆ My Watchlist</a><a class="ws-link" href="#saved">▤ Saved Articles</a><a class="ws-link" href="#tools">◌ Calculators</a>
+<div class="side-title">Create</div><a class="ws-link" href="../admin/index.html">✎ Publisher</a>
+<div class="side-title">Account</div><a class="ws-link" href="../login.html">⚙ Account</a><a class="ws-link" href="#" id="logoutSide">↪ Log out</a>
+</aside>
+<section class="workspace-main">
+<div class="ws-welcome"><div class="eyebrow" style="color:#9be3ff">FYNVERA WORKSPACE</div><h1 id="welcome">Good morning 👋</h1><p>Here is your personal reading and finance workspace.</p>
+<div class="ws-stats"><div class="ws-stat"><small>SAVED ARTICLES</small><strong id="savedCount">0</strong></div><div class="ws-stat"><small>TOPICS FOLLOWED</small><strong>5</strong></div><div class="ws-stat"><small>CALCULATORS</small><strong>05</strong></div><div class="ws-stat"><small>LEARNING</small><strong>3/5</strong></div></div></div>
+<div class="ws-grid">
+<section class="ws-panel" id="watchlist"><div class="ws-panel-head"><h3>My Watchlist</h3><a class="card-link" href="../articles.html">View all →</a></div>
+<div class="watch-row"><span>AAPL</span><b>$189.32</b><span class="ws-green">+1.48%</span></div><div class="watch-row"><span>MSFT</span><b>$421.15</b><span class="ws-green">+0.92%</span></div><div class="watch-row"><span>NVDA</span><b>$892.17</b><span class="ws-green">+3.12%</span></div><div class="watch-row"><span>EUR/USD</span><b>1.0724</b><span class="ws-green">+0.31%</span></div><p class="small muted" style="margin-top:10px">Demo watchlist values only. No live market API is connected.</p></section>
+<section class="ws-panel"><div class="ws-panel-head"><h3>Your Profile</h3><a class="card-link" href="../login.html">Account →</a></div><div class="ws-profile"><div class="avatar" id="avatar">F</div><div><strong id="profileName">Fynvera User</strong><div class="profile-email" id="profileEmail">user@example.com</div></div></div><div style="margin-top:12px"><a class="btn btn-primary" href="../admin/index.html" style="width:100%">Open Publisher</a></div></section>
+</div>
+<section class="ws-panel" id="saved" style="margin-top:14px"><div class="ws-panel-head"><h3>Saved Articles</h3><a class="card-link" href="../articles.html">Browse all →</a></div><div id="savedArticles"></div></section>
+<section class="ws-panel" id="tools" style="margin-top:14px"><div class="ws-panel-head"><h3>Financial Calculators</h3><a class="card-link" href="../index.html#calculators">View tools →</a></div><div class="ws-tools"><a class="ws-tool" href="../calculators/compound-interest.html"><div class="tool-num">01</div><h4>Compound Interest</h4><p>Growth over time.</p></a><a class="ws-tool" href="../calculators/loan-payment.html"><div class="tool-num">02</div><h4>Loan Payment</h4><p>Monthly estimate.</p></a><a class="ws-tool" href="../calculators/retirement.html"><div class="tool-num">03</div><h4>Retirement</h4><p>Savings projection.</p></a><a class="ws-tool" href="../calculators/inflation.html"><div class="tool-num">04</div><h4>Inflation</h4><p>Future cost.</p></a><a class="ws-tool" href="../calculators/net-worth.html"><div class="tool-num">05</div><h4>Net Worth</h4><p>Assets vs debts.</p></a></div></section>
+</section></div></main>
+<footer class="footer"><div class="container footer-bottom">© 2026 Fynvera. Workspace starter.</div></footer>
+<script src="../assets/js/data.js"></script>
+<script>
+/* Protect the workspace by requiring a local demo session. */
+if(!localStorage.getItem('fynvera_session')) location.href='../login.html';
+const user=JSON.parse(localStorage.getItem('fynvera_user')||'null');
+const name=user?.displayName || user?.email?.split('@')[0] || 'Fynvera User';
+document.getElementById('welcome').textContent=`Good morning, ${name} 👋`;
+document.getElementById('profileName').textContent=name;
+document.getElementById('profileEmail').textContent=user?.email || 'user@example.com';
+document.getElementById('avatar').textContent=name.charAt(0).toUpperCase();
+function savedIds(){try{return JSON.parse(localStorage.getItem('fynvera_saved')||'[]')}catch(e){return []}}
+const ids=savedIds();document.getElementById('savedCount').textContent=ids.length;
+const saved=FYNVERA_ARTICLES.filter(a=>ids.includes(a.id));
+document.getElementById('savedArticles').innerHTML=saved.length?saved.slice(0,5).map(a=>`<div class="ws-article"><div class="ws-thumb"></div><div><span>${a.cat} • ${a.date}</span><h4><a href="../article.html?id=${a.id}">${a.title}</a></h4></div></div>`).join(''):'<p class="muted small">You have no saved articles yet. Use the Save button in the article library.</p>';
+function logout(){localStorage.removeItem('fynvera_session');location.href='../login.html'}
+document.getElementById('logout').onclick=logout;document.getElementById('logoutSide').onclick=e=>{e.preventDefault();logout()};
+</script>
+</body></html>

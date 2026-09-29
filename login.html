@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- SEO: account pages are not indexed because this is a client-side starter account system. -->
+<title>Fynvera Account | Sign In & Sign Up</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="header"><div class="container nav"><a class="brand" href="index.html"><span class="brand-mark">↗</span><span class="brand-text">FYNVERA<small>Understand Money. Build Wealth.</small></span></a><a class="btn btn-outline" href="index.html">← Home</a></div></header>
+<main class="container">
+<section class="page-hero" style="max-width:780px;margin:auto;text-align:center"><div class="eyebrow">FYNVERA WORKSPACE</div><h1>Sign in. Learn. Save. Organise.</h1><p class="muted">Create a free demo account and continue to your personal Fynvera workspace.</p></section>
+<div class="form-wrap"><div class="form-card">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#eef5fb;padding:5px;border-radius:11px;margin-bottom:18px"><button id="signInTab" class="btn btn-primary" type="button">Sign In</button><button id="signUpTab" class="btn btn-outline" type="button">Sign Up</button></div>
+<div class="field"><label>Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
+<div class="field"><label>Password</label><input id="password" type="password" minlength="6" autocomplete="current-password" placeholder="Minimum 6 characters"></div>
+<div id="nameField" class="field" style="display:none"><label>Display name</label><input id="displayName" type="text" placeholder="Your name"></div>
+<button class="btn btn-primary" id="submitAuth" style="width:100%">Sign In</button>
+<p id="authMsg" class="small"></p>
+<div class="callout" style="margin-top:14px">Starter note: this account flow uses your browser's localStorage only. For real multi-device authentication/database, connect a secure backend before production.</div>
+</div></div>
+</main>
+<footer class="footer"><div class="container footer-bottom">© 2026 Fynvera.</div></footer>
+<script>
+/* =========================================================
+   DEMO AUTHENTICATION
+   This is intentionally local and free. It is not a production auth system.
+   Successful sign-in/sign-up sends the visitor to the workspace dashboard.
+   ========================================================= */
+let mode='signin';
+const signInTab=document.getElementById('signInTab'),signUpTab=document.getElementById('signUpTab'),nameField=document.getElementById('nameField'),submit=document.getElementById('submitAuth'),msg=document.getElementById('authMsg');
+function setMode(next){mode=next;const up=mode==='signup';nameField.style.display=up?'grid':'none';submit.textContent=up?'Create Account':'Sign In';signInTab.className=up?'btn btn-outline':'btn btn-primary';signUpTab.className=up?'btn btn-primary':'btn btn-outline';msg.textContent='';}
+signInTab.onclick=()=>setMode('signin');signUpTab.onclick=()=>setMode('signup');
+submit.onclick=()=>{
+ const email=document.getElementById('email').value.trim().toLowerCase(),password=document.getElementById('password').value,displayName=document.getElementById('displayName').value.trim()||email.split('@')[0];
+ if(!email||password.length<6){msg.textContent='Enter a valid email and a password of at least 6 characters.';return;}
+ if(mode==='signup'){
+   localStorage.setItem('fynvera_user',JSON.stringify({email,password,displayName,createdAt:new Date().toISOString()}));
+ } else {
+   const saved=JSON.parse(localStorage.getItem('fynvera_user')||'null');
+   if(!saved||saved.email!==email||saved.password!==password){msg.textContent='No matching demo account was found in this browser. Use Sign Up first.';return;}
+ }
+ localStorage.setItem('fynvera_session',email);window.location.href='workspace/index.html';
+};
+</script>
+</body>
+</html>
