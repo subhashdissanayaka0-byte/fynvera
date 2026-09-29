@@ -10,7 +10,7 @@
 <body>
 <header class="header"><div class="container nav"><a class="brand" href="index.html"><span class="brand-mark">↗</span><span class="brand-text">FYNVERA<small>Understand Money. Build Wealth.</small></span></a><a class="btn btn-outline" href="index.html">← Home</a></div></header>
 <main class="container">
-<section class="page-hero" style="max-width:780px;margin:auto;text-align:center"><div class="eyebrow">FYNVERA WORKSPACE</div><h1>Sign in. Learn. Save. Organise.</h1><p class="muted">Create a free demo account and continue to your personal Fynvera workspace.</p></section>
+<section class="page-hero" style="max-width:780px;margin:auto;text-align:center"><div class="eyebrow">FYNVERA WORKSPACE</div><h1>Sign in. Learn. Save. Organise.</h1><p class="muted">Create an account and continue to your personal Fynvera workspace.</p></section>
 <div class="form-wrap"><div class="form-card">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#eef5fb;padding:5px;border-radius:11px;margin-bottom:18px"><button id="signInTab" class="btn btn-primary" type="button">Sign In</button><button id="signUpTab" class="btn btn-outline" type="button">Sign Up</button></div>
 <div class="field"><label>Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
@@ -18,30 +18,78 @@
 <div id="nameField" class="field" style="display:none"><label>Display name</label><input id="displayName" type="text" placeholder="Your name"></div>
 <button class="btn btn-primary" id="submitAuth" style="width:100%">Sign In</button>
 <p id="authMsg" class="small"></p>
-<div class="callout" style="margin-top:14px">Starter note: this account flow uses your browser's localStorage only. For real multi-device authentication/database, connect a secure backend before production.</div>
 </div></div>
 </main>
 <footer class="footer"><div class="container footer-bottom">© 2026 Fynvera.</div></footer>
+
+<!-- Supabase JS Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 /* =========================================================
-   DEMO AUTHENTICATION
-   This is intentionally local and free. It is not a production auth system.
-   Successful sign-in/sign-up sends the visitor to the workspace dashboard.
+   SUPABASE AUTHENTICATION
    ========================================================= */
+
+// Nimma Supabase details illi haaki:
+const SUPABASE_URL = 'https://hylujlmailorfbhrwqul.supabase.co'; 
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5bHVqbG1haWxvcmZiaHJ3cXVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NjM4MTMsImV4cCI6MjEwNjIzOTgxM30.rMyRvHac1NE3jVYqet-W6bYpN7ZcK-M8pg-1le7WzOc';
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let mode='signin';
 const signInTab=document.getElementById('signInTab'),signUpTab=document.getElementById('signUpTab'),nameField=document.getElementById('nameField'),submit=document.getElementById('submitAuth'),msg=document.getElementById('authMsg');
+
 function setMode(next){mode=next;const up=mode==='signup';nameField.style.display=up?'grid':'none';submit.textContent=up?'Create Account':'Sign In';signInTab.className=up?'btn btn-outline':'btn btn-primary';signUpTab.className=up?'btn btn-primary':'btn btn-outline';msg.textContent='';}
 signInTab.onclick=()=>setMode('signin');signUpTab.onclick=()=>setMode('signup');
-submit.onclick=()=>{
- const email=document.getElementById('email').value.trim().toLowerCase(),password=document.getElementById('password').value,displayName=document.getElementById('displayName').value.trim()||email.split('@')[0];
- if(!email||password.length<6){msg.textContent='Enter a valid email and a password of at least 6 characters.';return;}
- if(mode==='signup'){
-   localStorage.setItem('fynvera_user',JSON.stringify({email,password,displayName,createdAt:new Date().toISOString()}));
- } else {
-   const saved=JSON.parse(localStorage.getItem('fynvera_user')||'null');
-   if(!saved||saved.email!==email||saved.password!==password){msg.textContent='No matching demo account was found in this browser. Use Sign Up first.';return;}
- }
- localStorage.setItem('fynvera_session',email);window.location.href='workspace/index.html';
+
+submit.onclick = async () => {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+  const displayName = document.getElementById('displayName').value.trim() || email.split('@')[0];
+
+  if (!email || password.length < 6) {
+    msg.textContent = 'Enter a valid email and a password of at least 6 characters.';
+    return;
+  }
+
+  submit.disabled = true;
+  msg.textContent = 'Loading...';
+
+  if (mode === 'signup') {
+    // Supabase Sign Up
+    const { data, error } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: { display_name: displayName }
+      }
+    });
+
+    if (error) {
+      msg.textContent = error.message;
+      submit.disabled = false;
+    } else {
+      msg.textContent = 'Account created successfully! Redirecting...';
+      setTimeout(() => {
+        window.location.href = 'workspace/index.html';
+      }, 1500);
+    }
+
+  } else {
+    // Supabase Sign In
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      msg.textContent = error.message;
+      submit.disabled = false;
+    } else {
+      msg.textContent = 'Sign in successful! Redirecting...';
+      window.location.href = 'workspace/index.html';
+    }
+  }
 };
 </script>
 </body>
